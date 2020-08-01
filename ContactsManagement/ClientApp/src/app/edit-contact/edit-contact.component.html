@@ -1,0 +1,47 @@
+<form (ngSubmit)="onSubmit(contactForm.value)">
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Edit Contact</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="col-md-12" [formGroup]="contactForm">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <input type="hidden" formControlName="ContactId" />
+          <label for="FirstName">First Name <span class="required">*</span></label>
+          <input id="FirstName" type="text" pInputText formControlName="FirstName" />
+          <span class="invalid-feedback" *ngIf="!contactForm.controls['FirstName'].valid && (contactForm.controls['FirstName'].dirty||submitted) && !contactForm.controls['FirstName'].errors['pattern']">First Name is required</span>
+          <span class="invalid-feedback" *ngIf="contactForm.controls['FirstName'].errors && (contactForm.controls['FirstName'].dirty||submitted) && contactForm.controls['FirstName'].errors['pattern']">Only alphabets are allowed in Name field</span>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="LastName">Last Name <span class="required">*</span></label>
+          <input id="LastName" type="text" pInputText formControlName="LastName" />
+          <span class="invalid-feedback" *ngIf="!contactForm.controls['LastName'].valid && (contactForm.controls['LastName'].dirty||submitted) && !contactForm.controls['LastName'].errors['pattern']">Last Name is required</span>
+          <span class="invalid-feedback" *ngIf="contactForm.controls['LastName'].errors && (contactForm.controls['LastName'].dirty||submitted) && contactForm.controls['LastName'].errors['pattern']">Only alphabets are allowed in Name field</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="Email">Email <span class="required">*</span></label>
+          <input id="Email" type="text" pInputText formControlName="Email" (blur)="validateEmail()" />
+          <span class="invalid-feedback" *ngIf="!contactForm.controls['Email'].valid && (contactForm.controls['Email'].dirty||submitted) && !contactForm.controls['Email'].errors['email'] && !contactForm.controls['Email'].errors.AlreadyExist">Email is required</span>
+          <span class="invalid-feedback" *ngIf="contactForm.controls['Email'].errors && (contactForm.controls['Email'].dirty||submitted) && contactForm.controls['Email'].errors['email']">Email is not valid</span>
+          <span class="invalid-feedback" *ngIf="contactForm.controls['Email'].errors && (contactForm.controls['Email'].dirty||submitted) && contactForm.controls['Email'].errors.AlreadyExist">Email already exists.</span>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="PhoneNumber">Phone Number <span class="required">*</span></label>
+          <input id="PhoneNumber" type="text" pInputText formControlName="PhoneNumber" (blur)="validatePhoneNumber()" />
+          <span class="invalid-feedback" *ngIf="!contactForm.controls['PhoneNumber'].valid && (contactForm.controls['PhoneNumber'].dirty||submitted) && !contactForm.controls['PhoneNumber'].errors['pattern'] && !contactForm.controls['PhoneNumber'].errors.AlreadyExist">Phone Number is required</span>
+          <span class="invalid-feedback" *ngIf="contactForm.controls['PhoneNumber'].errors && (contactForm.controls['PhoneNumber'].dirty||submitted) && contactForm.controls['PhoneNumber'].errors['pattern']">Please enter valid phone number</span>
+          <span class="invalid-feedback" *ngIf="contactForm.controls['PhoneNumber'].errors && (contactForm.controls['PhoneNumber'].dirty||submitted) && contactForm.controls['PhoneNumber'].errors.AlreadyExist">Phone number already exists.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button pButton type="submit" label="Save" icon="pi pi-save" (click)="submitted=true" class="ui-button-success"></button>
+    <button pButton type="button" label="Cancel" icon="pi pi-times" (click)="onCancel()" class="ui-button-secondary"></button>
+  </div>
+</form>

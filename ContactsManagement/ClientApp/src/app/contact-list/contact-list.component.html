@@ -1,0 +1,52 @@
+<div class="d-flex mb-3 border-bottom justify-content-between">
+  <h3>Contact List</h3>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <p-button label="Add" icon="pi pi-plus" iconPos="left" (click)="openAddContactDialog()"></p-button>
+  </div>
+</div>
+<div *ngFor="let alert of alerts">
+  <alert [type]="alert.type" [dismissible]="alert.dismissible" [dismissOnTimeout]="alert.timeout">{{ alert.message }}</alert>
+</div>
+<div class="table-responsive">
+  <p-table #dt [columns]="columns" [value]="contacts" [paginator]="true" [rows]="10" sortField="FirstName" [sortOrder]="1">
+    <ng-template pTemplate="caption">
+      <div style="text-align:right;">
+        <input type="text" pInputText size="50" placeholder="Search" (input)="dt.filterGlobal($event.target.value, 'contains')" />
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+          {{col.header}}
+          <p-sortIcon [field]="col.field"></p-sortIcon>
+        </th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr>
+        <td *ngFor="let col of columns">
+          {{rowData[col.field]}}
+        </td>
+        <td>
+          <p-button icon="pi pi-pencil" (click)="openEditContactDialog(rowData['ContactId'])"></p-button>
+          <button pButton type="button" icon="pi pi-trash" class="ui-button-danger" (click)="openDeleteConfirmationDialog(deleteConfirmationDialog, rowData['ContactId'])"></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+        <td [attr.colspan]="columns.length + 1" style="text-align:center;font-weight:bold;">
+          No contact found
+        </td>        
+      </tr>
+    </ng-template>
+  </p-table>
+  <ng-template #deleteConfirmationDialog>
+    <div class="modal-body text-center">
+      <p>Are you sure you want to remove this contact?</p>
+      <button pButton type="button" label="Yes" icon="pi pi-check" class="ui-button-secondary" (click)="confirmDelete()"></button>
+      <button pButton type="button" label="No" icon="pi pi-times" (click)="cancelDelete()"></button>
+    </div>
+  </ng-template>
+</div>

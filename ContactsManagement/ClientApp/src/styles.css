@@ -1,0 +1,54 @@
+.container-fluid {
+  padding-top: 70px !important;
+}
+
+@media (min-width: 576px) {
+  .modal-dialog {
+    max-width: 600px !important;
+    margin: 1.75rem auto;
+  }
+
+  .modal-dialog.modal-sm {
+    max-width: 400px!important;
+  }
+
+  .modal-dialog.modal-lg {
+    max-width: 700px !important;
+  }
+
+  .modal-dialog.modal-xl {
+    max-width: 900px !important;
+  }
+}
+
+.h4 h4 {
+  font-size: 1.3rem!important;
+}
+
+.h3 h3 {
+  font-size: 1.5rem !important;
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 80%;
+  color:#a80000;
+}
+
+.required {
+  color: #a80000;
+}
+
+form input {
+  width: 100%;
+}
+
+.pull-right {
+  float: right;
+}
+
+.pull-left {
+  float: left;
+}
