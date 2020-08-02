@@ -138,7 +138,7 @@ namespace ContactsManagement.Controllers
                 else
                 {
                     return NotFound("Contact not found with given id");
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -166,7 +166,7 @@ namespace ContactsManagement.Controllers
                     return BadRequest("id should be greater than zero.");
 
                 _contactsService.DeleteContact(id);
-                return Ok(new { Message = "Contact deleted successfully"});
+                return Ok(new { Message = "Contact deleted successfully" });
             }
             catch (Exception ex)
             {

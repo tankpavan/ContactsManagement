@@ -1,7 +1,8 @@
 using ContactsManagement.Controllers;
 using ContactsManagement.Domain.Interfaces;
 using ContactsManagement.Domain.Models;
-using ContactsManagement.Tests.Services;
+using ContactsManagement.Services;
+using ContactsManagement.Tests.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,8 +14,10 @@ namespace ContactsManagement.Tests.Controllers
     public class ContactsControllerTests
     {
         ContactsController _contactsController;
+        IContactsRepository _contactsRepository;
         IContactsService _contactsService;
-        ILogger<ContactsController> _logger;
+        ILogger<ContactsController> _contactsControllerLogger;
+        ILogger<ContactsService> _contactsServiceLogger;
 
         public ContactsControllerTests()
         {
@@ -22,9 +25,11 @@ namespace ContactsManagement.Tests.Controllers
 
             var factory = serviceProvider.GetService<ILoggerFactory>();
 
-            _logger = factory.CreateLogger<ContactsController>();
-            _contactsService = new ContactsServiceFake();
-            _contactsController = new ContactsController(_logger, _contactsService);
+            _contactsControllerLogger = factory.CreateLogger<ContactsController>();
+            _contactsServiceLogger = factory.CreateLogger<ContactsService>();
+            _contactsRepository = new ContactsRepositoryFake();
+            _contactsService = new ContactsService(_contactsServiceLogger, _contactsRepository);
+            _contactsController = new ContactsController(_contactsControllerLogger, _contactsService);
         }
 
         [SetUp]
@@ -50,7 +55,7 @@ namespace ContactsManagement.Tests.Controllers
             Assert.AreEqual(200, contact.StatusCode);
             Assert.AreEqual(1, (contact.Value as ContactModel).ContactId);
         }
-
+        
         [Test]
         public void AddContact_InvalidObject_ReturnsBadRequest()
         {
@@ -78,12 +83,20 @@ namespace ContactsManagement.Tests.Controllers
         }
 
         [Test]
+        public void DeleteContact_ReturnsBadRequest()
+        {
+            var contact = _contactsController.DeleteContact(0) as BadRequestObjectResult;
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), contact);
+            Assert.AreEqual(400, contact.StatusCode);
+            Assert.AreEqual("id should be greater than zero.", contact.Value.ToString());
+        }
+
+        [Test]
         public void DeleteContact_ReturnsOkObjectResult()
         {
             var contact = _contactsController.DeleteContact(2) as OkObjectResult;
-            Assert.IsInstanceOf(typeof(string), contact.Value);
             Assert.AreEqual(200, contact.StatusCode);
-            Assert.AreEqual("Contact deleted successfully", contact.Value.ToString());
+            Assert.AreEqual("Contact deleted successfully", contact.Value.GetType().GetProperty("Message").GetValue(contact.Value, null));
         }
 
         [Test]
@@ -98,7 +111,7 @@ namespace ContactsManagement.Tests.Controllers
                 PhoneNumber = 9999977777,
                 Status = "Active"
             };            
-            var contact = _contactsController.UpdateContact(contactModel) as OkObjectResult;
+            var contact = _contactsController.UpdateContact(1, contactModel) as OkObjectResult;
             Assert.IsInstanceOf(typeof(ContactModel), contact.Value);
             Assert.AreEqual(200, contact.StatusCode);
             Assert.AreEqual(1, (contact.Value as ContactModel).ContactId);
@@ -118,7 +131,7 @@ namespace ContactsManagement.Tests.Controllers
             };
             _contactsController.ModelState.AddModelError("FirstName", "Required");
 
-            var contact = _contactsController.UpdateContact(contactModel) as BadRequestObjectResult;
+            var contact = _contactsController.UpdateContact(1, contactModel) as BadRequestObjectResult;
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), contact);
             Assert.AreEqual(400, contact.StatusCode);
         }

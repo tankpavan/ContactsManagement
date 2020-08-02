@@ -3,14 +3,15 @@ using ContactsManagement.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
-namespace ContactsManagement.Tests.Services
+namespace ContactsManagement.Tests.Repositories
 {
-    public class ContactsServiceFake : IContactsService
+    public class ContactsRepositoryFake : IContactsRepository
     {
         private List<ContactModel> _contactModels;
 
-        public ContactsServiceFake()
+        public ContactsRepositoryFake()
         {
             _contactModels = new List<ContactModel>()
             {
@@ -50,7 +51,7 @@ namespace ContactsManagement.Tests.Services
             contact.LastName = contactModel.LastName;
             contact.Email = contactModel.Email;
             contact.PhoneNumber = contactModel.PhoneNumber;
-            _contactModels[contactIndex] = contact; 
+            _contactModels[contactIndex] = contact;
         }
     }
 }

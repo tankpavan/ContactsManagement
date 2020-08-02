@@ -18,18 +18,21 @@ namespace ContactsManagement
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
+        private readonly IHostingEnvironment _environment;
+        public IConfiguration Configuration { get; }
 
+        public Startup(IHostingEnvironment environment)
+        {
+            _environment = environment;
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(environment.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            
             Configuration = builder.Build();
         }
-
-        public IConfiguration Configuration { get; }
         
         public void ConfigureServices(IServiceCollection services)
         {
@@ -47,11 +50,14 @@ namespace ContactsManagement
             // Register Services
             services.AddScoped<IContactsService, ContactsService>();
             services.AddScoped<IContactsRepository, ContactsRepository>();
+
+            string connectionString = Configuration.GetConnectionString("ContactsManagementContext");
+            if (connectionString.Contains("%CONTENTROOTPATH%"))
+            {
+                connectionString = connectionString.Replace("%CONTENTROOTPATH%", _environment.ContentRootPath);
+            }
+            services.AddDbContext<ContactsManagementContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Singleton);
             
-            services.AddDbContext<ContactsManagementContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("ContactsManagementContext")), ServiceLifetime.Singleton);
-
-
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -60,9 +66,9 @@ namespace ContactsManagement
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            if (_environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -88,7 +94,7 @@ namespace ContactsManagement
 
                 spa.Options.SourcePath = "ClientApp";
 
-                if (env.IsDevelopment())
+                if (_environment.IsDevelopment())
                 {
                     spa.Options.StartupTimeout = new TimeSpan(days: 0, hours: 0, minutes: 1, seconds: 30);
                     spa.UseAngularCliServer(npmScript: "start");
