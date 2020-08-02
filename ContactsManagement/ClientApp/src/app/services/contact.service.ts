@@ -23,7 +23,7 @@ export class ContactService {
   }
 
   updateContact(contact: Contact) {
-    return this.http.put<Contact>(this.apiUrl + '/contacts', contact);
+    return this.http.put<Contact>(this.apiUrl + '/contacts/' + contact.ContactId, contact);
   }
 
   deleteContact(contactId: number) {
